@@ -1,15 +1,12 @@
-import * as dotenv from "dotenv";
 import {
-  Client,
-  GatewayIntentBits,
-  ButtonStyle,
   APIEmbed,
+  ButtonStyle,
+  Client,
   EmbedBuilder,
+  GatewayIntentBits,
 } from "discord.js";
 import { Configuration, OpenAIApi } from "openai";
 import config from "./config";
-
-dotenv.config();
 
 const client = new Client({
   intents: [GatewayIntentBits.Guilds],
@@ -20,8 +17,24 @@ client.on("interactionCreate", async (interaction) => {
 
   const { commandName } = interaction;
 
+  const openaiConfig = new Configuration({
+    apiKey: config.openai.apiKey,
+  });
+  const openai = new OpenAIApi(openaiConfig);
+
   if (commandName === "ping") {
-    await interaction.reply("Pong!");
+    await interaction.deferReply();
+
+    const completion = await openai.createCompletion({
+      model: "text-curie-001",
+      prompt: "Write a poem about getting pinged in Discord.",
+      max_tokens: 50,
+    });
+    const result = completion.data.choices[0].text;
+
+    await interaction.editReply({
+      content: result,
+    });
   } else if (commandName === "gpt-3") {
     if (!config.whitelist.includes(interaction.user.id)) {
       await interaction.reply(
@@ -33,17 +46,12 @@ client.on("interactionCreate", async (interaction) => {
     const prompt = interaction.options.get("prompt").value.toString();
     const model = interaction.options.get("model").value.toString();
 
-    const openaiConfig = new Configuration({
-      apiKey: config.openai.apiKey,
-    });
-    const openai = new OpenAIApi(openaiConfig);
-
     await interaction.deferReply();
 
     const completion = await openai.createCompletion({
       model: model,
       prompt,
-      max_tokens: 64,
+      max_tokens: 256,
     });
 
     const result = completion.data.choices[0].text;
