@@ -27,7 +27,7 @@ client.on("interactionCreate", async (interaction) => {
 
     const completion = await openai.createCompletion({
       model: "text-curie-001",
-      prompt: "Write a poem about getting pinged in Discord.",
+      prompt: "Write a very short poem about getting pinged in Discord.",
       max_tokens: 50,
     });
     const result = completion.data.choices[0].text;
@@ -56,10 +56,15 @@ client.on("interactionCreate", async (interaction) => {
 
     const result = completion.data.choices[0].text;
 
-    const embed = new EmbedBuilder().addFields(
-      { name: interaction.user.username, value: prompt },
-      { name: model, value: result }
-    );
+    const embed = new EmbedBuilder()
+      .addFields(
+        { name: interaction.user.username, value: prompt },
+        { name: model, value: result }
+      )
+      .setFooter({
+        text: "Powered by OpenAI",
+        iconURL: "https://openai.com/content/images/2022/05/openai-avatar.png",
+      });
 
     await interaction.editReply({
       embeds: [embed],
