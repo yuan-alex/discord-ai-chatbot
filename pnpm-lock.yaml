@@ -2,10 +2,10 @@ lockfileVersion: 5.4
 
 specifiers:
   '@discordjs/rest': ^1.5.0
-  '@types/node': ^18.14.2
+  '@types/node': ^18.14.4
   discord.js: ^14.7.1
   dotenv: ^16.0.3
-  openai: ^3.2.0
+  openai: ^3.2.1
   prettier: ^2.8.4
   ts-node-dev: ^2.0.0
   tsup: ^6.6.3
@@ -15,13 +15,13 @@ specifiers:
 dependencies:
   '@discordjs/rest': 1.5.0
   discord.js: 14.7.1
-  openai: 3.2.0
+  openai: 3.2.1
 
 devDependencies:
-  '@types/node': 18.14.2
+  '@types/node': 18.14.4
   dotenv: 16.0.3
   prettier: 2.8.4
-  ts-node-dev: 2.0.0_ellgaeuoqnti3hful2ny2iugba
+  ts-node-dev: 2.0.0_oboltcrkaqheaa54woelu7cdsa
   tsup: 6.6.3_typescript@4.9.5
   tsx: 3.12.3
   typescript: 4.9.5
@@ -365,8 +365,8 @@ packages:
     resolution: {integrity: sha512-yOlFc+7UtL/89t2ZhjPvvB/DeAr3r+Dq58IgzsFkOAvVC6NMJXmCGjbptdXdR9qsX7pKcTL+s87FtYREi2dEEQ==}
     dev: true
 
-  /@types/node/18.14.2:
-    resolution: {integrity: sha512-1uEQxww3DaghA0RxqHx0O0ppVlo43pJhepY51OxuQIKHpjbnYLA7vcdwioNPzIqmC2u3I/dmylcqjlh0e7AyUA==}
+  /@types/node/18.14.4:
+    resolution: {integrity: sha512-VhCw7I7qO2X49+jaKcAUwi3rR+hbxT5VcYF493+Z5kMLI0DL568b7JI4IDJaxWFH0D/xwmGJNoXisyX+w7GH/g==}
 
   /@types/strip-bom/3.0.0:
     resolution: {integrity: sha512-xevGOReSYGM7g/kUBZzPqCrR/KYAo+F0yiPc85WFTJa0MSLtyFTVTU6cJu/aV4mid7IffDIWqo69THF2o4JiEQ==}
@@ -379,7 +379,7 @@ packages:
   /@types/ws/8.5.4:
     resolution: {integrity: sha512-zdQDHKUgcX/zBc4GrwsE/7dVdAD8JR4EuiAXiiUhhfyIJXXb2+PrGshFyeXWQPMmmZ2XxgaqclgpIC7eTXc1mg==}
     dependencies:
-      '@types/node': 18.14.2
+      '@types/node': 18.14.4
     dev: false
 
   /acorn-walk/8.2.0:
@@ -826,8 +826,8 @@ packages:
     engines: {node: '>=10'}
     dev: true
 
-  /lilconfig/2.0.6:
-    resolution: {integrity: sha512-9JROoBW7pobfsx+Sq2JsASvCo6Pfo6WWoUW79HuB1BCoBXD4PLWJPqDF6fNj67pqBYTbAHkE57M1kS/+L1neOg==}
+  /lilconfig/2.1.0:
+    resolution: {integrity: sha512-utWOt/GHzuUxnLKxB6dk81RoOeoNeHgbrXiuGk4yyF5qlRz+iIVWu56E2fqGHFrXz0QNUhLB/8nKqvRH66JKGQ==}
     engines: {node: '>=10'}
     dev: true
 
@@ -948,8 +948,8 @@ packages:
       mimic-fn: 2.1.0
     dev: true
 
-  /openai/3.2.0:
-    resolution: {integrity: sha512-feeX3sSKyCVpDt1CBB++FxlaPxzc1dpwmx5ZlXAvuauv+Yk+R26x04TFIm9mLBJnDQ69MoCcJ5YSMASPJidSNA==}
+  /openai/3.2.1:
+    resolution: {integrity: sha512-762C9BNlJPbjjlWZi4WYK9iM2tAVAv0uUp1UmI34vb0CN5T2mjB/qM6RYBmNKMh/dN9fC+bxqPwWJZUTWW052A==}
     dependencies:
       axios: 0.26.1
       form-data: 4.0.0
@@ -1003,7 +1003,7 @@ packages:
       ts-node:
         optional: true
     dependencies:
-      lilconfig: 2.0.6
+      lilconfig: 2.1.0
       yaml: 1.10.2
     dev: true
 
@@ -1228,7 +1228,7 @@ packages:
     resolution: {integrity: sha512-k43M7uCG1AkTyxgnmI5MPwKoUvS/bRvLvUb7+Pgpdlmok8AoqmUaZxUUw8zKM5B1lqZrt41GjYgnvAi0fppqgQ==}
     dev: false
 
-  /ts-node-dev/2.0.0_ellgaeuoqnti3hful2ny2iugba:
+  /ts-node-dev/2.0.0_oboltcrkaqheaa54woelu7cdsa:
     resolution: {integrity: sha512-ywMrhCfH6M75yftYvrvNarLEY+SUXtUvU8/0Z6llrHQVBx12GiFk5sStF8UdfE/yfzk9IAq7O5EEbTQsxlBI8w==}
     engines: {node: '>=0.8.0'}
     hasBin: true
@@ -1247,7 +1247,7 @@ packages:
       rimraf: 2.7.1
       source-map-support: 0.5.21
       tree-kill: 1.2.2
-      ts-node: 10.9.1_ellgaeuoqnti3hful2ny2iugba
+      ts-node: 10.9.1_oboltcrkaqheaa54woelu7cdsa
       tsconfig: 7.0.0
       typescript: 4.9.5
     transitivePeerDependencies:
@@ -1256,7 +1256,7 @@ packages:
       - '@types/node'
     dev: true
 
-  /ts-node/10.9.1_ellgaeuoqnti3hful2ny2iugba:
+  /ts-node/10.9.1_oboltcrkaqheaa54woelu7cdsa:
     resolution: {integrity: sha512-NtVysVPkxxrwFGUUxGYhfux8k78pQB3JqYBXlLRZgdGUqTO5wU/UyHop5p70iEbGhB7q5KmiZiU0Y3KlJrScEw==}
     hasBin: true
     peerDependencies:
@@ -1275,7 +1275,7 @@ packages:
       '@tsconfig/node12': 1.0.11
       '@tsconfig/node14': 1.0.3
       '@tsconfig/node16': 1.0.3
-      '@types/node': 18.14.2
+      '@types/node': 18.14.4
       acorn: 8.8.2
       acorn-walk: 8.2.0
       arg: 4.1.3
