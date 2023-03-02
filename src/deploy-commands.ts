@@ -5,6 +5,14 @@ import config from "./config.js";
 const commands = [
   new SlashCommandBuilder().setName("ping").setDescription("pong"),
   new SlashCommandBuilder()
+    .setName("chatgpt")
+    .setDescription("ChatGPT toolkit")
+    .addSubcommand((subcommand) =>
+      subcommand
+        .setName("start")
+        .setDescription("Start thread with ChatGPT powered by GPT-3.5")
+    ),
+  new SlashCommandBuilder()
     .setName("gpt-3")
     .setDescription("GPT-3 toolkit")
     .addSubcommand((subcommand) =>

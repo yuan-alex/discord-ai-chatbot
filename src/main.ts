@@ -1,21 +1,17 @@
 import {
-  APIEmbed,
-  ButtonStyle,
   Client,
   EmbedBuilder,
   Events,
   GatewayIntentBits,
-  MessageInteraction,
   TextChannel,
-  ThreadChannel,
 } from "discord.js";
-import { Configuration, OpenAIApi } from "openai";
+import * as openai from "openai";
 import config from "./config.js";
 
-const openaiConfig = new Configuration({
+const openaiConfig = new openai.Configuration({
   apiKey: config.openai.apiKey,
 });
-const openai = new OpenAIApi(openaiConfig);
+const openaiAPI = new openai.OpenAIApi(openaiConfig);
 
 const client = new Client({
   intents: [
@@ -46,42 +42,47 @@ client.on(Events.MessageCreate, async (message) => {
       await message.channel.sendTyping();
 
       // this thread was created by the bot, so we can handle it
-      let prompt =
-        "The following is a Discord chat with a Discord GPT-3 bot. The bot is helpful, clever, and very concise. It responds in the style of a Discord user.\n\nHuman: Hello, who are you?\n";
+      let prompt = `You are ChatGPT, a large language model trained by OpenAI. You are also a Discord bot. Answer as concisely as possible. Each answer should be 200 characters or less. Answer in the style of a Discord user. Don't use formal language. Current date: ${new Date().toLocaleString()}.`;
 
       // get the last 10 messages from the thread
-      let messages = await message.channel.messages.fetch({
+      let discordMessages = await message.channel.messages.fetch({
         limit: 10,
       });
-      messages.reverse();
+      discordMessages.reverse();
 
-      messages
-        .filter((message) => {
-          return (
-            message.author.id === config.discord.clientId ||
-            config.whitelist.includes(message.author.id)
-          );
-        })
-        .forEach((message) => {
-          if (message.author.id === config.discord.clientId) {
-            prompt += "AI: ";
-          } else {
-            prompt += `${message.author.username}: `;
-          }
-          prompt += message.content + "\n";
-        });
-      prompt += "AI:";
+      const messages = [
+        {
+          role: openai.ChatCompletionRequestMessageRoleEnum.System,
+          content: prompt,
+        },
+        ...discordMessages
+          .filter((message) => {
+            return (
+              message.author.id === config.discord.clientId ||
+              config.whitelist.includes(message.author.id)
+            );
+          })
+          .map((message) => {
+            if (message.author.id === config.discord.clientId) {
+              return {
+                role: openai.ChatCompletionRequestMessageRoleEnum.System,
+                content: message.content,
+              };
+            } else {
+              return {
+                role: openai.ChatCompletionRequestMessageRoleEnum.User,
+                content: message.content,
+                name: message.author.username,
+              };
+            }
+          }),
+      ];
 
-      const response = await openai.createCompletion({
-        model: "text-davinci-003",
-        prompt,
-        temperature: 0.9,
-        max_tokens: 150,
-        top_p: 1,
-        frequency_penalty: 0,
-        presence_penalty: 0.6,
+      const response = await openaiAPI.createChatCompletion({
+        model: "gpt-3.5-turbo",
+        messages,
       });
-      const result = response.data.choices[0].text.slice(1);
+      const result = response.data.choices[0].message.content;
 
       await message.channel.send({
         content: result,
@@ -96,7 +97,7 @@ client.on("interactionCreate", async (interaction) => {
   if (interaction.commandName === "ping") {
     await interaction.deferReply();
 
-    const completion = await openai.createCompletion({
+    const completion = await openaiAPI.createCompletion({
       model: "text-curie-001",
       prompt: "Write a very short poem about getting pinged in Discord.",
       max_tokens: 50,
@@ -106,6 +107,33 @@ client.on("interactionCreate", async (interaction) => {
     await interaction.editReply({
       content: result,
     });
+  } else if (interaction.commandName === "chatgpt") {
+    if (interaction.options.getSubcommand() === "start") {
+      if (!config.whitelist.includes(interaction.user.id)) {
+        await interaction.reply(
+          "You do not have permissions to use this command."
+        );
+        return;
+      }
+
+      const channel = interaction.channel as TextChannel;
+
+      // create a new thread in response to the interaction
+      const thread = await channel.threads.create({
+        name: "ChatGPT",
+        autoArchiveDuration: 60,
+      });
+
+      await interaction.reply({
+        content: `I've created a new thread for you. We can talk in there.`,
+        ephemeral: true,
+      });
+
+      await thread.send({
+        content:
+          "What's up? I'm ChatGPT, a large language model trained by OpenAI. Please be aware that messages in this thread may be sent to OpenAI for processing.",
+      });
+    }
   } else if (interaction.commandName === "gpt-3") {
     if (interaction.options.getSubcommand() === "complete") {
       if (!config.whitelist.includes(interaction.user.id)) {
@@ -120,7 +148,7 @@ client.on("interactionCreate", async (interaction) => {
 
       await interaction.deferReply();
 
-      const completion = await openai.createCompletion({
+      const completion = await openaiAPI.createCompletion({
         model: model,
         prompt,
         max_tokens: 256,
@@ -175,30 +203,6 @@ client.on("interactionCreate", async (interaction) => {
         embeds: [embed],
       });
     } else if (interaction.options.getSubcommand() === "chat") {
-      if (!config.whitelist.includes(interaction.user.id)) {
-        await interaction.reply(
-          "You do not have permissions to use this command."
-        );
-        return;
-      }
-
-      const channel = interaction.channel as TextChannel;
-
-      // create a new thread in response to the interaction
-      const thread = await channel.threads.create({
-        name: "GPT-3 Chat",
-        autoArchiveDuration: 60,
-        reason: "GPT-3 Chat Thread",
-      });
-
-      await thread.send({
-        content: "Hello, I'm a Discord bot powered by GPT-3.",
-      });
-
-      await interaction.reply({
-        content: `Created thread: ${thread.name}`,
-        ephemeral: true,
-      });
     }
   }
 });
