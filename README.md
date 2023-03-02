@@ -12,6 +12,7 @@ An example of a Discord bot powered by the OpenAI API.
 
 ## Commands
 
+- `/chatgpt start` - Start a thread with ChatGPT.
 - `/gpt-3 complete` - Generate text using the GPT-3 API.
-- `/gpt-3 chat` - Starts a chat thread with GPT-3.
+- `/gpt-3 models` - Lists all GPT-3 based models.
 - `/ping` - Responds with a GPT-3 generated poem.
