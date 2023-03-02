@@ -202,7 +202,6 @@ client.on("interactionCreate", async (interaction) => {
       await interaction.reply({
         embeds: [embed],
       });
-    } else if (interaction.options.getSubcommand() === "chat") {
     }
   }
 });

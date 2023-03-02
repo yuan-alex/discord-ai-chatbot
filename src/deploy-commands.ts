@@ -19,9 +19,6 @@ const commands = [
       subcommand.setName("models").setDescription("List GPT-3 models")
     )
     .addSubcommand((subcommand) =>
-      subcommand.setName("chat").setDescription("Start thread with GPT-3")
-    )
-    .addSubcommand((subcommand) =>
       subcommand
         .setName("complete")
         .setDescription("Completes a prompt")
