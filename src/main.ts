@@ -97,12 +97,17 @@ client.on("interactionCreate", async (interaction) => {
   if (interaction.commandName === "ping") {
     await interaction.deferReply();
 
-    const completion = await openaiAPI.createCompletion({
-      model: "text-curie-001",
-      prompt: "Write a very short poem about getting pinged in Discord.",
+    const completion = await openaiAPI.createChatCompletion({
+      model: "gpt-3.5-turbo",
+      messages: [
+        {
+          role: "user",
+          content: "Write a very short poem about getting pinged in Discord.",
+        },
+      ],
       max_tokens: 50,
     });
-    const result = completion.data.choices[0].text;
+    const result = completion.data.choices[0].message.content;
 
     await interaction.editReply({
       content: result,
