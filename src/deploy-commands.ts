@@ -11,6 +11,27 @@ const commands = [
       subcommand
         .setName("start")
         .setDescription("Start thread with ChatGPT powered by GPT-3.5")
+    )
+    .addSubcommand((subcommand) =>
+      subcommand
+        .setName("complete")
+        .setDescription("Complete a prompt")
+        .addStringOption((option) =>
+          option
+            .setName("prompt")
+            .setDescription("Prompt for ChatGPT")
+            .setRequired(true)
+        )
+        .addStringOption((option) =>
+          option
+            .setName("model")
+            .setDescription(
+              "Each language model has different capabilities and price points"
+            )
+            .addChoices({ name: "GPT-3.5 (fastest)", value: "gpt-3.5-turbo" })
+            .addChoices({ name: "GPT-4 (most capable)", value: "gpt-4" })
+            .setRequired(true)
+        )
     ),
   new SlashCommandBuilder()
     .setName("gpt-3")
@@ -21,7 +42,7 @@ const commands = [
     .addSubcommand((subcommand) =>
       subcommand
         .setName("complete")
-        .setDescription("Completes a prompt")
+        .setDescription("Complete a prompt")
         .addStringOption((option) =>
           option
             .setName("prompt")

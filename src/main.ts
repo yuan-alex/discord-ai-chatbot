@@ -113,7 +113,8 @@ client.on("interactionCreate", async (interaction) => {
       content: result,
     });
   } else if (interaction.commandName === "chatgpt") {
-    if (interaction.options.getSubcommand() === "start") {
+    const subcommand = interaction.options.getSubcommand();
+    if (subcommand === "start") {
       if (!config.whitelist.includes(interaction.user.id)) {
         await interaction.reply(
           "You do not have permissions to use this command."
@@ -137,6 +138,49 @@ client.on("interactionCreate", async (interaction) => {
       await thread.send({
         content:
           "What's up? I'm ChatGPT, a large language model trained by OpenAI. Please be aware that messages in this thread may be sent to OpenAI for processing.",
+      });
+    } else if (subcommand === "complete") {
+      if (!config.whitelist.includes(interaction.user.id)) {
+        await interaction.reply(
+          "You do not have permissions to use this command."
+        );
+        return;
+      }
+
+      const prompt = interaction.options.get("prompt").value.toString();
+      const model = interaction.options.get("model").value.toString();
+
+      await interaction.deferReply();
+
+      const completion = await openaiAPI.createChatCompletion({
+        model,
+        messages: [
+          {
+            role: "system",
+            content:
+              "You are ChatGPT, a large language model trained by OpenAI.",
+          },
+          {
+            role: "user",
+            content: prompt,
+          },
+        ],
+        max_tokens: 256,
+      });
+
+      const result = completion.data.choices[0].message.content;
+
+      const embed = new EmbedBuilder()
+        .addFields(
+          { name: interaction.user.username, value: prompt },
+          { name: model, value: result }
+        )
+        .setFooter({
+          text: "Powered by OpenAI",
+        });
+
+      await interaction.editReply({
+        embeds: [embed],
       });
     }
   } else if (interaction.commandName === "gpt-3") {
