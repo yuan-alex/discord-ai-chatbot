@@ -189,17 +189,17 @@ client.on("interactionCreate", async (interaction) => {
           inline: true,
         },
         {
-          name: "Babbage (fast)",
+          name: "Babbage",
           value: "text-babbage-001",
           inline: true,
         },
         {
-          name: "Curie (medium)",
+          name: "Curie",
           value: "text-curie-001",
           inline: true,
         },
         {
-          name: "Davinci (largest)",
+          name: "Davinci (most powerful)",
           value: "text-davinci-003",
           inline: true,
         }
