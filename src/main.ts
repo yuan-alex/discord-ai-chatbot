@@ -199,8 +199,8 @@ client.on("interactionCreate", async (interaction) => {
           inline: true,
         },
         {
-          name: "Davinci (slow)",
-          value: "text-davinci-001",
+          name: "Davinci (largest)",
+          value: "text-davinci-003",
           inline: true,
         }
       );
