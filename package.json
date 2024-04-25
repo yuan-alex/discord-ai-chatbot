@@ -3,25 +3,28 @@
   "version": "0.0.1",
   "type": "module",
   "license": "MIT",
+  "private": true,
   "scripts": {
-    "deploy-commands": "tsx ./src/deploy-commands.ts",
-    "dev": "tsx watch ./src/main.ts",
+    "register": "tsx ./src/register.ts",
+    "dev": "tsx watch ./src/server.ts",
     "format": "prettier --write \"src/**/*.ts\"",
-    "build": "tsup-node --format=esm ./src/main.ts",
-    "start": "node ./dist/main.js"
+    "build": "tsup-node --clean ./src/server.ts",
+    "start": "node ./dist/server.cjs"
   },
   "dependencies": {
-    "@discordjs/rest": "^1.7.0",
-    "discord.js": "^14.9.0",
-    "openai": "^3.2.1"
+    "@discordjs/rest": "^2.2.0",
+    "@t3-oss/env-core": "^0.7.1",
+    "discord-interactions": "^3.4.0",
+    "discord.js": "^14.14.1",
+    "openai": "^4.20.0",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
-    "@types/node": "^18.16.2",
-    "dotenv": "^16.0.3",
-    "prettier": "^2.8.8",
-    "ts-node-dev": "^2.0.0",
-    "tsup": "^6.7.0",
-    "tsx": "^3.12.6",
-    "typescript": "^5.0.4"
+    "@types/node": "^20.10.0",
+    "dotenv": "^16.3.1",
+    "prettier": "^3.1.0",
+    "tsup": "^8.0.1",
+    "tsx": "^4.5.0",
+    "typescript": "^5.3.2"
   }
 }
