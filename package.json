@@ -1,6 +1,6 @@
 {
   "name": "gpt-discord-bot",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "type": "module",
   "license": "MIT",
   "private": true,
