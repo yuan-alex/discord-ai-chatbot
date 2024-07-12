@@ -7,6 +7,8 @@ const envVariables = z.object({
   DISCORD_USER_ID_WHITELIST_ENABLED: z.boolean(),
   DISCORD_USER_ID_WHITELIST: z.string(),
   OPENAI_API_KEY: z.string(),
+  OPENAI_BASE_URL: z.string().optional(),
+  OPENAI_MODEL: z.string().optional(),
 });
 
 declare global {

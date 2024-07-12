@@ -1,119 +1,118 @@
 import "dotenv/config";
 
 import {
+  ChannelType,
   Client,
   EmbedBuilder,
   Events,
   GatewayIntentBits,
-  TextChannel,
+  Partials,
+  type TextChannel,
+  ThreadAutoArchiveDuration,
 } from "discord.js";
 import OpenAI from "openai";
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+const modelConfig = {
+  name: process.env.OPENAI_MODEL || "gpt-3.5-turbo",
+  systemPrompt: `You are a Discord bot. Respond concisely. Do not use too many emojis. Always ensure replies promote positive values. It is currently ${new Date().toLocaleString()}.`,
+};
+
+const MESSAGE_CONTEXT_LENGTH = 10;
+
+const openai = new OpenAI();
 
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.DirectMessages,
     GatewayIntentBits.MessageContent,
   ],
+  partials: [Partials.Channel, Partials.Message],
 });
 
+function checkUserIdWhitelist(userId: string) {
+  return (
+    userId === process.env.DISCORD_CLIENT_ID ||
+    process.env.DISCORD_USER_ID_WHITELIST.split(",").includes(userId)
+  );
+}
+
 client.on(Events.MessageCreate, async (message) => {
-  // check if the interaction is a response to a thread we created and is human
-  if (!message.author.bot && message.channel.isThread()) {
-    if (
-      !process.env.DISCORD_USER_ID_WHITELIST.split(",").includes(
-        message.author.id
-      )
-    ) {
-      return;
-    }
-
-    // check if the thread was created by the bot
-    let messages = await message.channel.messages.fetch({
-      limit: 100,
-    });
-    messages.reverse();
-
-    const initialMessage = messages.first();
-    if (
-      initialMessage.author.bot &&
-      initialMessage.author.id === process.env.DISCORD_CLIENT_ID
-    ) {
-      await message.channel.sendTyping();
-
-      // this thread was created by the bot, so we can handle it
-      const systemPrompt = `You are ChatGPT, a large language model trained by OpenAI. You are also a Discord bot. Answer as concisely as possible. Each answer should be 200 characters or less. Answer in the style of a Discord user. Current date: ${new Date().toLocaleString()}.`;
-
-      // get the last 10 messages from the thread
-      let discordMessages = await message.channel.messages.fetch({
-        limit: 10,
-      });
-      discordMessages.reverse();
-
-      const messages = [
-        {
-          role: "system",
-          content: systemPrompt,
-        },
-        ...discordMessages
-          .filter((message) => {
-            return (
-              message.author.id === process.env.DISCORD_CLIENT_ID ||
-              process.env.DISCORD_USER_ID_WHITELIST.split(",").includes(
-                message.author.id
-              )
-            );
-          })
-          .map((message) => {
-            if (message.author.id === process.env.DISCORD_CLIENT_ID) {
-              return {
-                role: "system",
-                content: message.content,
-              };
-            } else {
-              return {
-                role: "user",
-                content: message.content,
-                name: message.author.username,
-              };
-            }
-          }),
-      ];
-
-      const response = await openai.chat.completions.create({
-        model: "gpt-3.5-turbo-1106",
-        messages,
-      });
-      const result = response.choices[0].message.content;
-
-      await message.channel.send({
-        content: result,
-      });
-    }
+  if (
+    message.author.bot ||
+    !message.author ||
+    !checkUserIdWhitelist(message.author.id) ||
+    (message.channel.isThread() &&
+      message.channel.ownerId !== process.env.DISCORD_CLIENT_ID) ||
+    (!message.channel.isThread() && message.channel.type !== ChannelType.DM)
+  ) {
+    return;
   }
+
+  message.channel.sendTyping();
+
+  // for now the context is the last 10 messages in the thread
+  const discordMessages = await message.channel.messages.fetch({
+    limit: MESSAGE_CONTEXT_LENGTH,
+  });
+  discordMessages.reverse();
+
+  const messages = [
+    {
+      role: "system",
+      content: modelConfig.systemPrompt,
+    },
+    ...discordMessages
+      .filter((message) => checkUserIdWhitelist(message.author.id))
+      .map((message) =>
+        message.author.id === process.env.DISCORD_CLIENT_ID
+          ? {
+              role: "assistant",
+              content: message.content,
+            }
+          : {
+              role: "user",
+              content: message.content,
+              name: message.author.username,
+            },
+      ),
+  ];
+
+  const response = await openai.chat.completions.create({
+    model: modelConfig.name,
+    messages,
+  });
+  const result = response.choices[0].message.content;
+
+  await message.channel.send({
+    content: result,
+  });
 });
 
 client.on("interactionCreate", async (interaction) => {
   if (!interaction.isChatInputCommand()) return;
 
   if (interaction.commandName === "ping") {
-    interaction.editReply({
-      content: "pong!",
+    const completion = await openai.chat.completions.create({
+      model: modelConfig.name,
+      messages: [
+        {
+          role: "user",
+          content: "Write a short poem about getting pinged in Discord.",
+        },
+      ],
     });
-  } else if (interaction.commandName === "chat") {
+
+    interaction.reply({
+      content: completion.choices[0].message.content,
+    });
+  } else if (interaction.commandName === "chatbot") {
     const subcommand = interaction.options.getSubcommand();
     if (subcommand === "start") {
-      if (
-        !process.env.DISCORD_USER_ID_WHITELIST.split(",").includes(
-          interaction.user.id
-        )
-      ) {
+      if (!checkUserIdWhitelist(interaction.user.id)) {
         await interaction.reply(
-          "You do not have permissions to use this command."
+          "You do not have permissions to use this command.",
         );
         return;
       }
@@ -122,8 +121,8 @@ client.on("interactionCreate", async (interaction) => {
 
       // create discord thread
       const thread = await channel.threads.create({
-        name: "ChatGPT Thread",
-        autoArchiveDuration: 60,
+        name: "AI Chatbot Thread",
+        autoArchiveDuration: ThreadAutoArchiveDuration.OneDay,
       });
 
       await interaction.reply({
@@ -132,23 +131,19 @@ client.on("interactionCreate", async (interaction) => {
       });
 
       await thread.send({
-        content:
-          "I'm ChatGPT, a large language model trained by OpenAI. *Please be aware that messages in this thread may be sent to OpenAI for processing*.",
+        content: "Hello, how can I help you today?",
       });
-    } else if (subcommand === "complete") {
-      if (
-        !process.env.DISCORD_USER_ID_WHITELIST.split(",").includes(
-          interaction.user.id
-        )
-      ) {
+    } else if (subcommand === "message") {
+      if (!checkUserIdWhitelist(interaction.user.id)) {
         await interaction.reply(
-          "You do not have permissions to use this command."
+          "You do not have permissions to use this command.",
         );
         return;
       }
 
-      const prompt = interaction.options.get("prompt").value.toString();
-      const model = interaction.options.get("model").value.toString();
+      const prompt = interaction.options.get("content").value.toString();
+      const model =
+        interaction.options.get("model")?.value.toString() || modelConfig.name;
 
       await interaction.deferReply();
 
@@ -157,8 +152,7 @@ client.on("interactionCreate", async (interaction) => {
         messages: [
           {
             role: "system",
-            content:
-              "You are ChatGPT, a large language model trained by OpenAI.",
+            content: modelConfig.systemPrompt,
           },
           {
             role: "user",
@@ -170,14 +164,10 @@ client.on("interactionCreate", async (interaction) => {
 
       const result = completion.choices[0].message.content;
 
-      const embed = new EmbedBuilder()
-        .addFields(
-          { name: interaction.user.username, value: prompt },
-          { name: model, value: result }
-        )
-        .setFooter({
-          text: "Powered by OpenAI",
-        });
+      const embed = new EmbedBuilder().addFields(
+        { name: interaction.user.username, value: prompt },
+        { name: model, value: result },
+      );
 
       await interaction.editReply({
         embeds: [embed],
