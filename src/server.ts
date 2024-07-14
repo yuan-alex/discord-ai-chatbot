@@ -44,6 +44,7 @@ function checkUserIdWhitelist(userId: string) {
 client.on(Events.MessageCreate, async (message) => {
   if (
     !message.author ||
+    message.author.bot ||
     !checkUserIdWhitelist(message.author.id) ||
     (message.channel.isThread() &&
       message.channel.ownerId !== env.DISCORD_CLIENT_ID) ||
@@ -70,14 +71,14 @@ client.on(Events.MessageCreate, async (message) => {
       .map((message) =>
         message.author.id === env.DISCORD_CLIENT_ID
           ? {
-              role: "assistant",
-              content: message.content,
-            }
+            role: "assistant",
+            content: message.content,
+          }
           : {
-              role: "user",
-              content: message.content,
-              name: message.author.username,
-            },
+            role: "user",
+            content: message.content,
+            name: message.author.username,
+          },
       ),
   ];
 
