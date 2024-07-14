@@ -1,6 +1,7 @@
 import "dotenv/config";
 
 import { commands } from "./commands.js";
+import { env } from "./env.js";
 
 const url = `https://discord.com/api/v10/applications/${process.env.DISCORD_CLIENT_ID}/commands`;
 
@@ -10,7 +11,7 @@ fetch(url, {
   body: JSON.stringify(commands),
   headers: {
     "Content-Type": "application/json",
-    Authorization: `Bot ${process.env.DISCORD_BOT_TOKEN}`,
+    Authorization: `Bot ${env.DISCORD_BOT_TOKEN}`,
   },
 })
   .then((res) => res.json())
