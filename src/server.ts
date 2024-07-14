@@ -1,5 +1,3 @@
-import "dotenv/config";
-
 import {
   ChannelType,
   Client,
@@ -12,9 +10,11 @@ import {
 } from "discord.js";
 import OpenAI from "openai";
 
+import { env } from "./env";
+
 const modelConfig = {
-  name: process.env.OPENAI_MODEL || "gpt-3.5-turbo",
-  systemPrompt: `You are a Discord bot. Respond concisely. Do not use too many emojis. Always ensure replies promote positive values. It is currently ${new Date().toLocaleString()}.`,
+  name: env.OPENAI_MODEL || "gpt-3.5-turbo",
+  systemPrompt: `You are a Discord bot. Do not use too many emojis. Always ensure replies promote positive values. It is currently ${new Date().toLocaleString()}.`,
 };
 
 const MESSAGE_CONTEXT_LENGTH = 10;
@@ -33,8 +33,8 @@ const client = new Client({
 
 function checkUserIdWhitelist(userId: string) {
   return (
-    userId === process.env.DISCORD_CLIENT_ID ||
-    process.env.DISCORD_USER_ID_WHITELIST.split(",").includes(userId)
+    userId === env.DISCORD_CLIENT_ID ||
+    env.DISCORD_USER_ID_WHITELIST?.split(",").includes(userId)
   );
 }
 
@@ -44,7 +44,7 @@ client.on(Events.MessageCreate, async (message) => {
     !message.author ||
     !checkUserIdWhitelist(message.author.id) ||
     (message.channel.isThread() &&
-      message.channel.ownerId !== process.env.DISCORD_CLIENT_ID) ||
+      message.channel.ownerId !== env.DISCORD_CLIENT_ID) ||
     (!message.channel.isThread() && message.channel.type !== ChannelType.DM)
   ) {
     return;
@@ -66,16 +66,16 @@ client.on(Events.MessageCreate, async (message) => {
     ...discordMessages
       .filter((message) => checkUserIdWhitelist(message.author.id))
       .map((message) =>
-        message.author.id === process.env.DISCORD_CLIENT_ID
+        message.author.id === env.DISCORD_CLIENT_ID
           ? {
-              role: "assistant",
-              content: message.content,
-            }
+            role: "assistant",
+            content: message.content,
+          }
           : {
-              role: "user",
-              content: message.content,
-              name: message.author.username,
-            },
+            role: "user",
+            content: message.content,
+            name: message.author.username,
+          },
       ),
   ];
 
@@ -180,4 +180,4 @@ client.once("ready", (c) => {
   console.log(`✨ Ready! Logged in as ${c.user.tag}`);
 });
 
-client.login(process.env.DISCORD_BOT_TOKEN);
+client.login(env.DISCORD_BOT_TOKEN);
