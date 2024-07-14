@@ -34,6 +34,7 @@ const client = new Client({
 function checkUserIdWhitelist(userId: string) {
   return (
     userId === env.DISCORD_CLIENT_ID ||
+    !env.DISCORD_USER_ID_WHITELIST ||
     env.DISCORD_USER_ID_WHITELIST?.split(",").includes(userId)
   );
 }
