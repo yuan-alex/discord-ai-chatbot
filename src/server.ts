@@ -14,7 +14,9 @@ import { env } from "./env";
 
 const modelConfig = {
   name: env.OPENAI_MODEL || "gpt-3.5-turbo",
-  systemPrompt: `You are a Discord bot. Do not use too many emojis. Always ensure replies promote positive values. It is currently ${new Date().toLocaleString()}.`,
+  systemPrompt:
+    env.MODEL_SYSTEM_PROMPT ||
+    `You are a Discord bot. Do not use too many emojis. Always ensure replies promote positive values. It is currently ${new Date().toLocaleString()}.`,
 };
 
 const MESSAGE_CONTEXT_LENGTH = 10;

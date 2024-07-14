@@ -9,6 +9,7 @@ const EnvSchema = z.object({
   OPENAI_API_KEY: z.string(),
   OPENAI_BASE_URL: z.string().optional(),
   OPENAI_MODEL: z.string().optional(),
+  MODEL_SYSTEM_PROMPT: z.string().optional(),
 });
 
 export const env = EnvSchema.parse(process.env);
