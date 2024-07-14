@@ -40,7 +40,6 @@ function checkUserIdWhitelist(userId: string) {
 
 client.on(Events.MessageCreate, async (message) => {
   if (
-    message.author.bot ||
     !message.author ||
     !checkUserIdWhitelist(message.author.id) ||
     (message.channel.isThread() &&
@@ -91,7 +90,12 @@ client.on(Events.MessageCreate, async (message) => {
 });
 
 client.on("interactionCreate", async (interaction) => {
-  if (!interaction.isChatInputCommand()) return;
+  if (
+    !interaction.isChatInputCommand() ||
+    !checkUserIdWhitelist(interaction.user.id)
+  ) {
+    return;
+  }
 
   if (interaction.commandName === "ping") {
     const completion = await openai.chat.completions.create({
@@ -110,13 +114,6 @@ client.on("interactionCreate", async (interaction) => {
   } else if (interaction.commandName === "chatbot") {
     const subcommand = interaction.options.getSubcommand();
     if (subcommand === "start") {
-      if (!checkUserIdWhitelist(interaction.user.id)) {
-        await interaction.reply(
-          "You do not have permissions to use this command.",
-        );
-        return;
-      }
-
       const channel = interaction.channel as TextChannel;
 
       // create discord thread
