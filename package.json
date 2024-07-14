@@ -8,7 +8,7 @@
     "register": "tsx ./src/register.ts",
     "dev": "tsx watch ./src/server.ts",
     "format": "biome format --write ./src",
-    "build": "tsup-node --clean ./src/server.ts",
+    "build": "tsup --clean ./src/server.ts ./src/register.ts",
     "start": "node ./dist/server.cjs"
   },
   "dependencies": {
