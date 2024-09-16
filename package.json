@@ -12,19 +12,19 @@
     "start": "node ./dist/server.cjs"
   },
   "dependencies": {
-    "@discordjs/rest": "^2.3.0",
-    "discord-interactions": "^4.0.0",
-    "discord.js": "^14.15.3",
-    "openai": "^4.52.7",
+    "@discordjs/rest": "^2.4.0",
+    "discord-interactions": "^4.1.0",
+    "discord.js": "^14.16.2",
+    "openai": "^4.61.1",
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@biomejs/biome": "^1.8.3",
-    "@types/node": "^20.14.11",
+    "@biomejs/biome": "^1.9.1",
+    "@types/node": "^22.5.5",
     "dotenv": "^16.4.5",
-    "tsup": "^8.2.1",
-    "tsx": "^4.16.2",
-    "typescript": "^5.5.3"
+    "tsup": "^8.2.4",
+    "tsx": "^4.19.1",
+    "typescript": "^5.6.2"
   },
   "packageManager": "pnpm@9.9.0+sha512.60c18acd138bff695d339be6ad13f7e936eea6745660d4cc4a776d5247c540d0edee1a563695c183a66eb917ef88f2b4feb1fc25f32a7adcadc7aaf3438e99c1"
 }
