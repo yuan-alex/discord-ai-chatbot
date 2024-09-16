@@ -10,16 +10,16 @@ import {
 } from "discord.js";
 import OpenAI from "openai";
 
-import { env } from "./env";
+import { env } from "./utils/env";
 
 const modelConfig = {
-  name: env.OPENAI_MODEL || "gpt-3.5-turbo",
+  name: env.OPENAI_MODEL || "gpt-4o-mini",
   systemPrompt:
     env.MODEL_SYSTEM_PROMPT ||
-    `You are a Discord bot. Do not use too many emojis. Always ensure replies promote positive values. It is currently ${new Date().toLocaleString()}.`,
+    `Respond concisely. Promote positive values. It is currently ${new Date().toLocaleString()}.`,
 };
 
-const MESSAGE_CONTEXT_LENGTH = 10;
+const MESSAGE_CONTEXT_LENGTH = 5;
 
 const openai = new OpenAI();
 
@@ -71,14 +71,14 @@ client.on(Events.MessageCreate, async (message) => {
       .map((message) =>
         message.author.id === env.DISCORD_CLIENT_ID
           ? {
-              role: "assistant",
-              content: message.content,
-            }
+            role: "assistant",
+            content: message.content,
+          }
           : {
-              role: "user",
-              content: message.content,
-              name: message.author.username,
-            },
+            role: "user",
+            content: message.content,
+            name: message.author.username,
+          },
       ),
   ];
 

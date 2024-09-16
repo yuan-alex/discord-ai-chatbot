@@ -1,7 +1,7 @@
 import "dotenv/config";
 
-import { commands } from "./commands.js";
-import { env } from "./env.js";
+import { commands } from "./utils/commands.js";
+import { env } from "./utils/env.js";
 
 const url = `https://discord.com/api/v10/applications/${process.env.DISCORD_CLIENT_ID}/commands`;
 
