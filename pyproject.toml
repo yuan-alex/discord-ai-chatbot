@@ -1,0 +1,12 @@
+[project]
+name = "gpt-discord-bot"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "audioop-lts>=0.2.1",
+    "discord-py>=2.4.0",
+    "openai>=1.55.2",
+    "python-dotenv>=1.0.1",
+]
